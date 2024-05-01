@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/case_java8/case_java8.iml" filepath="$PROJECT_DIR$/case_java8/case_java8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jmh_performance/jmh_performance.iml" filepath="$PROJECT_DIR$/jmh_performance/jmh_performance.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,3 @@
+# 项目排除路径
+/case_java8/target/
+/jmh_performance/target/
