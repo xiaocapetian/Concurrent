@@ -19,6 +19,8 @@ public class TestCorrectPostureStep2 {
                     try {
                         room.wait(2000);
                     } catch (InterruptedException e) {
+                        //这个异常是什么时候会抛出呢,就是你别的线程如果调用了interrupt方法
+                        //它也会让正在wait的线程被打断,打断了以后,我们可以捉住一个异常
                         e.printStackTrace();
                     }
                 }

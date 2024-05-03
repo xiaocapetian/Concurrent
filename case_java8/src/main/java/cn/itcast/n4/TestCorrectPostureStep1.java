@@ -36,10 +36,11 @@ public class TestCorrectPostureStep1 {
         sleep(1);
         new Thread(() -> {
             // 这里能不能加 synchronized (room)？
-            synchronized (room) {
+            //不可以这样👇,为什么,此时[小南]占着锁,送烟也进不去,小南醒了之后看到还是没有烟,走了,不干活了
+            //synchronized (room) {
                 hasCigarette = true;
                 log.debug("烟到了噢！");
-            }
+            //}
         }, "送烟的").start();
     }
 

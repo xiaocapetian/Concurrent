@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
+/**
+ * 哲学家筷子问题
+ */
 public class TestDeadLock {
     public static void main(String[] args) {
         Chopstick c1 = new Chopstick("1");

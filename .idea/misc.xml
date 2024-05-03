@@ -5,6 +5,8 @@
       <list>
         <option value="$PROJECT_DIR$/case_java8/pom.xml" />
         <option value="$PROJECT_DIR$/jmh_performance/pom.xml" />
+        <option value="$PROJECT_DIR$/jmh_eliminate_locks/pom.xml" />
+        <option value="$PROJECT_DIR$/case_monitor/pom.xml" />
       </list>
     </option>
   </component>

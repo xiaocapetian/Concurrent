@@ -30,13 +30,13 @@ public class MonitorService {
 
         // 由于之前的 balking 模式，以下代码只可能被一个线程执行，因此无需互斥
         monitorThread = new Thread(() -> {
-            while (!stop) {
+            while (!stop) {//<===是不是得volatile啊
                 report();
                 sleep(2);
             }
             // 这里的监控线程只可能启动一个，因此只需要用 volatile 保证 starting 的可见性
             log.info("监控线程已停止...");
-            starting = false;
+            starting = false;//监控线程对共享变量的修改,你想让tomcat线程知道,是不是得volatile啊
         });
 
         stop = false;

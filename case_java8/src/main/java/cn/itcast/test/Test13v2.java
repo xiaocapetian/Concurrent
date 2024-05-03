@@ -2,6 +2,9 @@ package cn.itcast.test;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 用volatile实现两阶段终止模式 优雅退出
+ */
 @Slf4j(topic = "c.TwoPhaseTermination")
 public class Test13v2 {
     public static void main(String[] args) throws InterruptedException {
@@ -10,9 +13,9 @@ public class Test13v2 {
         tpt.start();
         tpt.start();
 
-        /*Thread.sleep(3500);
+        Thread.sleep(3500);
         log.debug("停止监控");
-        tpt.stop();*/
+        tpt.stop();
     }
 }
 
@@ -22,12 +25,13 @@ class TwoPhaseTermination {
     private Thread monitorThread;
     // 停止标记
     private volatile boolean stop = false;
+    //====只需要一个监控线程
     // 判断是否执行过 start 方法
     private boolean starting = false;
 
-    // 启动监控线程
+    // 启动监控线程---只希望执行一次
     public void start() {
-        synchronized (this) {
+        synchronized (this) {//防止2个线程都进来
             if (starting) { // false
                 return;
             }
@@ -54,6 +58,6 @@ class TwoPhaseTermination {
     // 停止监控线程
     public void stop() {
         stop = true;
-        monitorThread.interrupt();
+        monitorThread.interrupt();//加了这个会让正在睡的它立刻醒来去比stop.不加的会就会睡满1s
     }
 }

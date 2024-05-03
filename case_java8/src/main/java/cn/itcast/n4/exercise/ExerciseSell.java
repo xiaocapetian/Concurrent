@@ -22,7 +22,7 @@ public class ExerciseSell {
                 // 买票
                 int amount = window.sell(random(5));
                 try {
-                    Thread.sleep(random(50));
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -67,8 +67,8 @@ class TicketWindow {
     }
 
     // 售票
-    //public synchronized int sell(int amount) {
-    public int sell(int amount) {//这就有线程安全问题了
+    public synchronized int sell(int amount) {
+    //public int sell(int amount) {//这就有线程安全问题了
         if (this.count >= amount) {
             this.count -= amount;
             return amount;//卖了多少票要返回

@@ -44,7 +44,7 @@ class AwaitSignal extends ReentrantLock{
         for (int i = 0; i < loopNumber; i++) {
             lock();
             try {
-                current.await();
+                current.await();//上来就进休息室
                 System.out.print(str);
                 next.signal();
             } catch (InterruptedException e) {

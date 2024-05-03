@@ -20,6 +20,9 @@ public class Test20 {
     }
 }
 
+/**
+ * 居民线程
+ */
 @Slf4j(topic = "c.People")
 class People extends Thread{
     @Override
@@ -27,11 +30,14 @@ class People extends Thread{
         // 收信
         GuardedObject guardedObject = Mailboxes.createGuardedObject();
         log.debug("开始收信 id:{}", guardedObject.getId());
-        Object mail = guardedObject.get(5000);
+        Object mail = guardedObject.waitToGet(5000);
         log.debug("收到信 id:{}, 内容:{}", guardedObject.getId(), mail);
     }
 }
 
+/**
+ * 邮递员线程
+ */
 @Slf4j(topic = "c.Postman")
 class Postman extends Thread {
     private int id;
@@ -50,7 +56,9 @@ class Postman extends Thread {
     }
 }
 
+//设计模式之小邮箱
 class Mailboxes {
+    //Hashtable<>()线程安全
     private static Map<Integer, GuardedObject> boxes = new Hashtable<>();
 
     private static int id = 1;
@@ -63,6 +71,7 @@ class Mailboxes {
         return boxes.remove(id);
     }
 
+    //本方法为什么不用加锁呢?因为用的是线程安全的Hashtable
     public static GuardedObject createGuardedObject() {
         GuardedObject go = new GuardedObject(generateId());
         boxes.put(go.getId(), go);
@@ -84,16 +93,12 @@ class GuardedObject {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
-    }
-
     // 结果
     private Object response;
 
     // 获取结果
     // timeout 表示要等待多久 2000
-    public Object get(long timeout) {
+    public Object waitToGet(long timeout) {
         synchronized (this) {
             // 开始时间 15:00:00
             long begin = System.currentTimeMillis();
@@ -125,5 +130,10 @@ class GuardedObject {
             this.response = response;
             this.notifyAll();
         }
+    }
+
+
+    public int getId() {
+        return id;
     }
 }

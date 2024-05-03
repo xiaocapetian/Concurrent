@@ -6,13 +6,22 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jmh_eliminate_locks" />
+        <module name="case_monitor" />
         <module name="jmh_performance" />
         <module name="case_java8" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
       <module name="case_java8" target="1.8" />
+      <module name="case_monitor" target="1.8" />
+      <module name="jmh_eliminate_locks" target="1.8" />
       <module name="jmh_performance" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="case_monitor" options="-parameters" />
+    </option>
   </component>
 </project>

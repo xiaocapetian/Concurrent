@@ -53,7 +53,9 @@ class Account {
     }
 
     // 转账
+    //你能把锁加在这吗👇方法上?不可以因为这等价于加在(this),保护了this.setMoney,但是没保护 target.setMoney
     public void transfer(Account target, int amount) {
+        //synchronized(this) {
         synchronized(Account.class) {
             if (this.money >= amount) {
                 this.setMoney(this.getMoney() - amount);

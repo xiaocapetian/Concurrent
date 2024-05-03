@@ -10,6 +10,7 @@ import static cn.itcast.n2.util.Sleeper.sleep;
 
 @Slf4j(topic = "c.Test22")
 public class Test22 {
+    //ReentrantLock
     private static ReentrantLock lock = new ReentrantLock();
     public static void main(String[] args) {
         Thread t1 = new Thread(() -> {

@@ -80,7 +80,7 @@ class MessageQueue {
         }
     }
 }
-
+//只有get没有set,不可改,线程安全的
 final class Message {
     private int id;
     private Object value;

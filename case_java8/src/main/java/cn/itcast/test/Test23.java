@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 用ReentrantLock的 tryLock()来解决哲学界筷子
+ */
 @Slf4j(topic = "c.Test23")
 public class Test23 {public static void main(String[] args) {
     Chopstick c1 = new Chopstick("1");
@@ -39,6 +42,7 @@ class Philosopher extends Thread {
             if(left.tryLock()) {
                 try {
                     // 尝试获得右手筷子
+                    //如果获取右筷子失败了,就放弃左筷子
                     if(right.tryLock()) {
                         try {
                             eat();

@@ -30,6 +30,8 @@ public class Test31 {
 }
 
 class ParkUnpark {
+
+    //打印什么,唤醒什么
     public void print(String str, Thread next) {
         for (int i = 0; i < loopNumber; i++) {
             LockSupport.park();
