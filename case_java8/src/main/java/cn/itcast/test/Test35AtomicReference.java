@@ -35,11 +35,14 @@ class DecimalAccountCas implements DecimalAccount {
         while(true) {
             BigDecimal prev = balance.get();
             BigDecimal next = prev.subtract(amount);
+            //获取值,减法,设置值,实际上是三个步骤
+            //BigDecimal类本身是不可变类,上面三步骤的每一步都是线程安全的,但是组合在一起就不安全了,需要CAS
             if (balance.compareAndSet(prev, next)) {
                 break;
             }
         }
     }
+    
 }
 
 interface DecimalAccount {

@@ -13,6 +13,7 @@ public class Test39 {
 
     public static void main(String[] args) {
         demo(
+                //可见这个数组是线程不安全的
                 ()->new int[10],
                 (array)->array.length,
                 (array, index) -> array[index]++,
@@ -26,7 +27,7 @@ public class Test39 {
                 array -> System.out.println(array)
         );
     }
-
+//本例子的意义远不止于此啊,这告诉了我怎么函数式接口
     /**
      参数1，提供数组、可以是线程不安全数组或线程安全数组
      参数2，获取数组长度的方法
@@ -35,7 +36,7 @@ public class Test39 {
      */
     // supplier 提供者 无中生有  ()->结果
     // function 函数   一个参数一个结果   (参数)->结果  ,  BiFunction (参数1,参数2)->结果
-    // consumer 消费者 一个参数没结果  (参数)->void,      BiConsumer (参数1,参数2)->
+    // consumer 消费者 一个参数没结果  (参数)->void(没有结果),      BiConsumer (参数1,参数2)->void(没有结果)
     private static <T> void demo(
             Supplier<T> arraySupplier,
             Function<T, Integer> lengthFun,

@@ -6,6 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.itcast.n2.util.Sleeper.sleep;
 
+/**
+ * 用cas设计一个锁
+ */
 @Slf4j(topic = "c.Test42")
 public class LockCas {
     // 0 没加锁
@@ -13,7 +16,7 @@ public class LockCas {
     private AtomicInteger state = new AtomicInteger(0);
 
     public void lock() {
-        while (true) {
+        while (true) {//获取锁不成功就在这空转,<<===这其实很有问题
             if (state.compareAndSet(0, 1)) {
                 break;
             }
