@@ -39,6 +39,7 @@ class AccountCas implements Account {
                 break;
             }
         }
+        //可以简化为👇
         //balance.getAndAdd(-1 * amount);
     }
 }

@@ -27,6 +27,8 @@ public class Test34 {
         while (true) {
             int prev = i.get();
             int next = operator.applyAsInt(prev);
+            //怎么计算由lamda表达式决定了,让operator.applyAsInt()来算个结果就行
+            //然后开始cas
             if (i.compareAndSet(prev, next)) {
                 return next;
             }

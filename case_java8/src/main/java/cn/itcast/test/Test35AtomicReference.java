@@ -3,19 +3,21 @@ package cn.itcast.test;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j(topic = "c.Test35")
-public class Test35 {
+public class Test35AtomicReference {
     public static void main(String[] args) {
         DecimalAccount.demo(new DecimalAccountCas(new BigDecimal("10000")));
     }
 }
 
 class DecimalAccountCas implements DecimalAccount {
+    //原子引用类
+    //private BigDecimal balance;
+    //泛型就是要保护的对象
     private AtomicReference<BigDecimal> balance;
 
     public DecimalAccountCas(BigDecimal balance) {
