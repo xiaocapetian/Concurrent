@@ -9,6 +9,11 @@ import java.time.temporal.TemporalAccessor;
 @Slf4j(topic = "c.Test1")
 public class Test1 {
     public static void main(String[] args) {
+        test();
+        //test2();
+    }
+
+    private static void test2() {
         DateTimeFormatter stf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (int i = 0; i < 10; i++) {
             new Thread(() -> {

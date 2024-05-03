@@ -4,7 +4,9 @@ import cn.itcast.n4.UnsafeAccessor;
 import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 
-
+/**
+ * 尝试着自己写一个原子整数类[原理学习]
+ */
 @Slf4j(topic = "c.Test42")
 public class Test42 {
     public static void main(String[] args) {
@@ -13,11 +15,11 @@ public class Test42 {
 }
 
 class MyAtomicInteger implements Account {
-    private volatile int value;
+    private volatile int value;//为什么加volatile?要和cas配合
     private static final long valueOffset;
     private static final Unsafe UNSAFE;
     static {
-        UNSAFE = UnsafeAccessor.getUnsafe();
+        UNSAFE = UnsafeAccessor.getUnsafe();//这是我们自己写的封装的一个工具类
         try {
             valueOffset = UNSAFE.objectFieldOffset(MyAtomicInteger.class.getDeclaredField("value"));
         } catch (NoSuchFieldException e) {

@@ -9,8 +9,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-
-public class Test3 {
+//自己定义一个连接池
+public class Test3DIYConnectionPool {
     public static void main(String[] args) {
         Pool pool = new Pool(2);
         for (int i = 0; i < 5; i++) {
@@ -37,6 +37,7 @@ class Pool {
 
     // 3. 连接状态数组 0 表示空闲， 1 表示繁忙
     private AtomicIntegerArray states;
+    //private int[] states;//👈你能这样吗?,不可以,因为需要线程安全的
 
     // 4. 构造方法初始化
     public Pool(int poolSize) {
@@ -52,19 +53,21 @@ class Pool {
     public Connection borrow() {
         while(true) {
             for (int i = 0; i < poolSize; i++) {
-                // 获取空闲连接
+                // 循环议论看看有没有空闲连接
                 if(states.get(i) == 0) {
                     if (states.compareAndSet(i, 0, 1)) {
+                        //如果可以从0改成1(cas乐观锁)
                         log.debug("borrow {}", connections[i]);
                         return connections[i];
                     }
                 }
             }
+
             // 如果没有空闲连接，当前线程进入等待
             synchronized (this) {
                 try {
                     log.debug("wait...");
-                    this.wait();
+                    this.wait();//可以进休息室了
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -75,7 +78,9 @@ class Pool {
     // 6. 归还连接
     public void free(Connection conn) {
         for (int i = 0; i < poolSize; i++) {
+            //遍历连接池能不能找到同一个对象
             if (connections[i] == conn) {
+                //如果找到了
                 states.set(i, 0);
                 synchronized (this) {
                     log.debug("free {}", conn);

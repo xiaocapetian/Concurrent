@@ -7,6 +7,9 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * 原子累加器
+ */
 public class Test41 {
     public static void main(String[] args) {
         for (int i = 0; i < 5; i++) {
@@ -25,8 +28,8 @@ public class Test41 {
     }
 
     /*
-    () -> 结果    提供累加器对象
-    (参数) ->     执行累加操作
+    Supplier   () -> 结果    提供累加器对象
+    Consumer   (参数) ->     执行累加操作
      */
     private static <T> void demo(Supplier<T> adderSupplier, Consumer<T> action) {
         T adder = adderSupplier.get();
