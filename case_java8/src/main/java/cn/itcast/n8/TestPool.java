@@ -13,10 +13,11 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j(topic = "c.TestPool")
 public class TestPool {
     public static void main(String[] args) {
-        ThreadPool threadPool = new ThreadPool(1,
-                1000, TimeUnit.MILLISECONDS, 1, (queue, task)->{
+        ThreadPool threadPool = new ThreadPool(2,
+                1000, TimeUnit.MILLISECONDS, 2, (queue, task)->{
+            //拒绝策略,策略模式
             // 1. 死等
-//            queue.put(task);
+            queue.put(task);
             // 2) 带超时等待
 //            queue.offer(task, 1500, TimeUnit.MILLISECONDS);
             // 3) 让调用者放弃任务执行
@@ -24,9 +25,9 @@ public class TestPool {
             // 4) 让调用者抛出异常
 //            throw new RuntimeException("任务执行失败 " + task);
             // 5) 让调用者自己执行任务
-            task.run();
+            //task.run();
         });
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             int j = i;
             threadPool.execute(() -> {
                 try {
@@ -34,7 +35,7 @@ public class TestPool {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                log.debug("{}", j);
+                log.debug("{}", j);//i是变化的,不能被里面的lamda所直接使用
             });
         }
     }
@@ -65,16 +66,18 @@ class ThreadPool {
 
     // 执行任务
     public void execute(Runnable task) {
-        // 当任务数没有超过 coreSize 时，直接交给 worker 对象执行
-        // 如果任务数超过 coreSize 时，加入任务队列暂存
-        synchronized (workers) {
+
+
+        synchronized (workers) {//👈这里要加锁HashSet<Worker>是一个共享对象
+            // 当任务数没有超过 coreSize 时，直接交给 worker 对象执行
             if(workers.size() < coreSize) {
-                Worker worker = new Worker(task);
+                Worker worker = new Worker(task);//创建一个新线程来执行这个task
                 log.debug("新增 worker{}, {}", worker, task);
-                workers.add(worker);
+                workers.add(worker);//加入
                 worker.start();
             } else {
-//                taskQueue.put(task);
+            // 如果任务数超过 coreSize 时，加入任务队列暂存
+                //taskQueue.put(task);
                 // 1) 死等
                 // 2) 带超时等待
                 // 3) 让调用者放弃任务执行
@@ -85,6 +88,14 @@ class ThreadPool {
         }
     }
 
+    /**
+     *
+     * @param coreSize 核心线程数
+     * @param timeout 获取任务时的超时时间
+     * @param timeUnit 时间单位
+     * @param queueCapcity 队列大小
+     * @param rejectPolicy ***[拒绝策略]
+     */
     public ThreadPool(int coreSize, long timeout, TimeUnit timeUnit, int queueCapcity, RejectPolicy<Runnable> rejectPolicy) {
         this.coreSize = coreSize;
         this.timeout = timeout;
@@ -105,7 +116,7 @@ class ThreadPool {
             // 执行任务
             // 1) 当 task 不为空，执行任务
             // 2) 当 task 执行完毕，再接着从任务队列获取任务并执行
-//            while(task != null || (task = taskQueue.take()) != null) {
+            //while(task != null || (task = taskQueue.take()) != null) {
             while(task != null || (task = taskQueue.poll(timeout, timeUnit)) != null) {
                 try {
                     log.debug("正在执行...{}", task);
@@ -116,6 +127,7 @@ class ThreadPool {
                     task = null;
                 }
             }
+            //一旦退出这个循环,应该把从线程集合中移除掉<==为什么呢?
             synchronized (workers) {
                 log.debug("worker 被移除{}", this);
                 workers.remove(this);
@@ -130,6 +142,8 @@ class BlockingQueue<T> {
 
     // 2. 锁
     private ReentrantLock lock = new ReentrantLock();
+    //为什么要锁,一个任务只能被一个线程获取,不能被几个线程获取了
+    //用锁保护队列头和队列尾的元素
 
     // 3. 生产者条件变量
     private Condition fullWaitSet = lock.newCondition();
@@ -156,7 +170,7 @@ class BlockingQueue<T> {
                     if (nanos <= 0) {
                         return null;
                     }
-                    nanos = emptyWaitSet.awaitNanos(nanos);
+                    nanos = emptyWaitSet.awaitNanos(nanos);//剩余的时间重新赋给它
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -172,16 +186,18 @@ class BlockingQueue<T> {
     // 阻塞获取
     public T take() {
         lock.lock();
+        //为什么要锁,一个任务只能被一个线程获取,不能被几个线程获取了
+        //用锁保护队列头和队列尾的元素
         try {
             while (queue.isEmpty()) {
                 try {
-                    emptyWaitSet.await();
+                    emptyWaitSet.await();//等待
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            T t = queue.removeFirst();
-            fullWaitSet.signal();
+            T t = queue.removeFirst();//获取队列头的元素
+            fullWaitSet.signal();//唤醒等存任务的线程
             return t;
         } finally {
             lock.unlock();
@@ -194,6 +210,7 @@ class BlockingQueue<T> {
         try {
             while (queue.size() == capcity) {
                 try {
+                    //等待进去等待区
                     log.debug("等待加入任务队列 {} ...", task);
                     fullWaitSet.await();
                 } catch (InterruptedException e) {
@@ -202,7 +219,7 @@ class BlockingQueue<T> {
             }
             log.debug("加入任务队列 {}", task);
             queue.addLast(task);
-            emptyWaitSet.signal();
+            emptyWaitSet.signal();//唤醒等取任务的线程
         } finally {
             lock.unlock();
         }
@@ -216,6 +233,7 @@ class BlockingQueue<T> {
             while (queue.size() == capcity) {
                 try {
                     if(nanos <= 0) {
+                        log.debug("超时 {} ...", task);
                         return false;
                     }
                     log.debug("等待加入任务队列 {} ...", task);
@@ -242,6 +260,11 @@ class BlockingQueue<T> {
         }
     }
 
+    /**
+     * 往里加
+     * @param rejectPolicy
+     * @param task
+     */
     public void tryPut(RejectPolicy<T> rejectPolicy, T task) {
         lock.lock();
         try {
@@ -250,8 +273,8 @@ class BlockingQueue<T> {
                 rejectPolicy.reject(this, task);
             } else {  // 有空闲
                 log.debug("加入任务队列 {}", task);
-                queue.addLast(task);
-                emptyWaitSet.signal();
+                queue.addLast(task);//加到尾部
+                emptyWaitSet.signal();//通知
             }
         } finally {
             lock.unlock();

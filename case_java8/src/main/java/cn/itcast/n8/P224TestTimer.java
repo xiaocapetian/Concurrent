@@ -9,9 +9,18 @@ import java.util.concurrent.*;
 import static cn.itcast.n2.util.Sleeper.sleep;
 
 @Slf4j(topic = "c.TestTimer")
-public class TestTimer {
+public class P224TestTimer {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        /*ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
+        //method1();
+        method3();
+        //method4();
+
+        //method5();
+    }
+
+    private static void method4() {
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
         pool.schedule(() -> {
             try {
                 log.debug("task1");
@@ -19,8 +28,10 @@ public class TestTimer {
             } catch (Exception e) {
                 log.error("error:", e);
             }
-        }, 1, TimeUnit.SECONDS);*/
+        }, 1, TimeUnit.SECONDS);
+    }
 
+    private static void method5() {
         ExecutorService pool = Executors.newFixedThreadPool(1);
         pool.submit(() -> {
             try {
@@ -35,8 +46,12 @@ public class TestTimer {
     private static void method3() {
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
         log.debug("start...");
-        pool.scheduleAtFixedRate(() -> {
+        pool.scheduleAtFixedRate(() -> {//翻译为以固定的速率执行任务schedule At Fixed Rate(实际执行时间超出了就无缝执行)
             log.debug("running...");
+        }, 1, 1, TimeUnit.SECONDS);
+
+        pool.scheduleWithFixedDelay(() -> {//翻译为以固定的间隔执行,
+            log.debug("running2...");
         }, 1, 1, TimeUnit.SECONDS);
     }
 
@@ -49,6 +64,7 @@ public class TestTimer {
         pool.schedule(() -> {
             log.debug("task2");
         }, 1, TimeUnit.SECONDS);
+        //如果一个任务出异常了,后续任务还是可以执行
     }
 
     private static void method1() {
