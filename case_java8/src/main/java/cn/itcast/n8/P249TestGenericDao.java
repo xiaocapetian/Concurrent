@@ -3,7 +3,7 @@ package cn.itcast.n8;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class TestGenericDao {
+public class P249TestGenericDao {
     public static void main(String[] args) {
         GenericDao dao = new GenericDaoCached();
         System.out.println("============> 查询");
@@ -23,7 +23,11 @@ public class TestGenericDao {
     }
 }
 
+//造一个带缓存功能的子类
 class GenericDaoCached extends GenericDao {
+    //注意，装饰器模式，装饰者模式允许你动态地给一个对象添加额外的职责。
+    // 在这个类中，GenericDaoCached 类扩展了 GenericDao 类，并添加了缓存的功能。
+    // 这符合装饰者模式的特点，因为 GenericDaoCached 并没有改变 GenericDao 的接口，而是通过添加新的行为（缓存）来扩展其功能。
     private GenericDao dao = new GenericDao();
     private Map<SqlPair, Object> map = new HashMap<>();
     private ReentrantReadWriteLock rw = new ReentrantReadWriteLock();
@@ -48,7 +52,8 @@ class GenericDaoCached extends GenericDao {
         }
         rw.writeLock().lock();
         try {
-            // 多个线程
+            //我已经通过加锁保证之有一个线程进来，但是它放锁后
+            // 多个线程都可能到这一步，所以在这里来个双重检查
             T value = (T) map.get(key);
             if(value == null) {
                 // 缓存中没有，查询数据库

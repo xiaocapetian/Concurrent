@@ -11,7 +11,7 @@ import java.util.*;
 public class GenericDao {
     static String URL = "jdbc:mysql://localhost:3306/test";
     static String USERNAME = "root";
-    static String PASSWORD = "root";
+    static String PASSWORD = "qwe123";
 
     public <T> List<T> queryList(Class<T> beanClass, String sql, Object... args) {
         System.out.println("sql: [" + sql + "] params:" + Arrays.toString(args));

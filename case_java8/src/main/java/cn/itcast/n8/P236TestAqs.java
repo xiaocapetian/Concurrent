@@ -10,7 +10,7 @@ import java.util.concurrent.locks.Lock;
 import static cn.itcast.n2.util.Sleeper.sleep;
 
 @Slf4j(topic = "c.TestAqs")
-public class TestAqs {
+public class P236TestAqs {
     public static void main(String[] args) {
         MyLock lock = new MyLock();
         new Thread(() -> {
@@ -36,13 +36,17 @@ public class TestAqs {
     }
 }
 
-// 自定义锁（不可重入锁）
+// 自定义锁（我想实现一个不可重入锁）
 class MyLock implements Lock {
 
-    // 独占锁  同步器类
+    // 独占锁  同步器类（我定一个同步器类
     class MySync extends AbstractQueuedSynchronizer {
+        /**
+         * 尝试获取锁
+         */
         @Override
         protected boolean tryAcquire(int arg) {
+            //State初始值是0，我尝试如果能把从0改成1（且用cas方式修改），那就加锁成功了
             if(compareAndSetState(0, 1)) {
                 // 加上了锁，并设置 owner 为当前线程
                 setExclusiveOwnerThread(Thread.currentThread());
@@ -51,14 +55,19 @@ class MyLock implements Lock {
             return false;
         }
 
+        /**
+         * 释放锁
+         */
         @Override
         protected boolean tryRelease(int arg) {
             setExclusiveOwnerThread(null);
             setState(0);
+            //注意这个顺序啊，State是volitale的，所以后改它，以使对其他线程可见
             return true;
         }
 
-        @Override // 是否持有独占锁
+        // 是否持有独占锁
+        @Override
         protected boolean isHeldExclusively() {
             return getState() == 1;
         }

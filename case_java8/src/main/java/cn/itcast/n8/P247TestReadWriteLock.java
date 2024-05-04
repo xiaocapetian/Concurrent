@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static cn.itcast.n2.util.Sleeper.sleep;
 
 @Slf4j(topic = "c.TestReadWriteLock")
-public class TestReadWriteLock {
+public class P247TestReadWriteLock {
     public static void main(String[] args) throws InterruptedException {
         DataContainer dataContainer = new DataContainer();
         new Thread(() -> {
