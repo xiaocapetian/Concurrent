@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-//自己定义一个连接池
+//自己DIY定义一个连接池
 public class Test3DIYConnectionPool {
     public static void main(String[] args) {
         Pool pool = new Pool(2);

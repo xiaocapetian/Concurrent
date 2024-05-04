@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 @Slf4j(topic = "c.TestDeadLock")
-public class TestStarvation {
+public class P221TestStarvation {
 
     static final List<String> MENU = Arrays.asList("地三鲜", "宫保鸡丁", "辣子鸡丁", "烤鸡翅");
     static Random RANDOM = new Random();
@@ -21,6 +21,7 @@ public class TestStarvation {
     public static void main(String[] args) {
         ExecutorService waiterPool = Executors.newFixedThreadPool(1);
         ExecutorService cookPool = Executors.newFixedThreadPool(1);
+        //不同的任务创建不同的线程池
 
         waiterPool.execute(() -> {
             log.debug("处理点餐...");

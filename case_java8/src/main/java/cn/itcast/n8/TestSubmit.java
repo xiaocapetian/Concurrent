@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Slf4j(topic = "c.TestSubmit")
 public class TestSubmit {
@@ -15,6 +12,7 @@ public class TestSubmit {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ExecutorService pool = Executors.newFixedThreadPool(1);
 
+        method1(pool);
     }
 
     private static void method3(ExecutorService pool) throws InterruptedException, ExecutionException {
@@ -42,7 +40,8 @@ public class TestSubmit {
     }
 
     private static void method2(ExecutorService pool) throws InterruptedException {
-        List<Future<String>> futures = pool.invokeAll(Arrays.asList(
+        List<Future<String>> futures = pool.invokeAll(
+                Arrays.asList(
                 () -> {
                     log.debug("begin");
                     Thread.sleep(1000);
@@ -76,6 +75,18 @@ public class TestSubmit {
             return "ok";
         });
 
+        log.debug("{}", future.get());
+    }
+    private static void method11(ExecutorService pool) throws InterruptedException, ExecutionException {
+        //匿名内部类写法
+        Future<String> future = pool.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                log.debug("running");
+                Thread.sleep(1000);
+                return "ok";
+            }
+        } );
         log.debug("{}", future.get());
     }
 }
